@@ -106,7 +106,7 @@ async function sayText(text, language, uuid) {
 
 //-----
 
-async function sendMsgToAi(text, sessionId, sessionToken, uuid, callerNumber) {
+async function sendMsgToAi(text, sessionId, sessionToken, uuid, callDirection) {
 
     try {
 
@@ -115,7 +115,6 @@ async function sendMsgToAi(text, sessionId, sessionToken, uuid, callerNumber) {
       console.log('>>> session id:', sessionId);
       console.log('>>> session token:', sessionToken);
       console.log('>>> uuid:', uuid);
-      console.log('>>> caller number:', callerNumber);
 
       const stepResponse = await axios.post('https://' + vgAiHost + '/http/' + sessionId + '/step', 
         { 
@@ -126,9 +125,9 @@ async function sendMsgToAi(text, sessionId, sessionToken, uuid, callerNumber) {
               "value": uuid
             },
             {
-              "name": "caller",
-              "value": callerNumber
-            }    
+              "name": "calldirection",
+              "value": callDirection
+            },
           ]
         },
         {
@@ -206,12 +205,14 @@ app.get('/startcall', async(req, res) => {
 
       const initialData = await axios.post('https://' + vgAiHost + '/http/init', 
         { 
-          "agent_id": agentId
+          "agent_id": agentId,
+          "calldirection": "incoming"
         },
         {
           headers: {
             "Content-Type": "application/json",
-            "X-Vgai-Key": xVgaiKey,
+            "X-Vgai-Key": xVgaiKey
+            // "calldirection": "incoming"
           }
         }
       );
@@ -273,7 +274,7 @@ app.get('/answer_1', async(req, res) => {
   const sessionId = req.query.session_id;
   const sessionToken = req.query.session_token;
 
-  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken  + '&caller_number=' + servicePhoneNumber;
+  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken  + '&caller_number=' + servicePhoneNumber  + '&call_direction=outgoing';
 
   const nccoResponse = [
     {
@@ -300,7 +301,7 @@ app.get('/answer_1', async(req, res) => {
 
   //-- Send dummy initial prompt to AI studio agent -- 
 
-  const aiReply = await sendMsgToAi("Hello", sessionId, sessionToken, uuid, servicePhoneNumber);
+  const aiReply = await sendMsgToAi("Hello", sessionId, sessionToken, uuid, "outgoing");
 
   if (aiReply && aiReply.aiResponse != "") {
     await sayText(aiReply.aiResponse, 'en-US', uuid)
@@ -377,8 +378,7 @@ app.get('/answer', async(req, res) => {
 
   const uuid = req.query.uuid;
  
-  // const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken  + '&caller_number=' + req.query.from;
-  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken  + '&caller_number=' + servicePhoneNumber;
+  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken + '&call_direction=incoming';
 
   const nccoResponse = [
     {
@@ -405,7 +405,7 @@ app.get('/answer', async(req, res) => {
 
   //-- Send dummy initial prompt to AI studio agent -- 
 
-  const aiReply = await sendMsgToAi("Hello", sessionId, sessionToken, uuid, servicePhoneNumber);
+  const aiReply = await sendMsgToAi("Hello", sessionId, sessionToken, uuid, "incoming");
 
   if (aiReply && aiReply.aiResponse != "") {
     await sayText(aiReply.aiResponse, 'en-US', uuid)
@@ -455,7 +455,7 @@ app.post('/calltransfer', async(req, res) => {
       "action": "connect",
       "eventUrl": ["https://" + hostName + "/event_transferee"],
       "timeout": "45",
-      "from": req.body.caller,
+      "from": servicePhoneNumber,
       "endpoint": [
         {
           "type": "phone",
@@ -521,8 +521,7 @@ app.ws('/socket', async (ws, req) => {
   console.log('WebSocket from Vonage platform to /socket')
 
   const originalUuid = req.query.original_uuid;
-
-  const callerNumber = req.query.caller_number;
+  const callDirection = req.query.call_direction;
 
   let canSendAiStep = true;
 
@@ -563,7 +562,7 @@ app.ws('/socket', async (ws, req) => {
 
         if (canSendAiStep) {
           
-          const aiReply = await sendMsgToAi(transcript, vgAiSessionId, vgAiSessionToken, originalUuid, callerNumber);
+          const aiReply = await sendMsgToAi(transcript, vgAiSessionId, vgAiSessionToken, originalUuid, callDirection);
           
           console.log('>>> Response from AI agent:', aiReply);
 
