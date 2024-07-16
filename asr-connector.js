@@ -58,11 +58,6 @@ const { Vonage } = require('@vonage/server-sdk');
 
 const vonage = new Vonage(credentials, options);
 
-// Use for direct REST API calls - Sample code
-// const appId = process.env.APP_ID; // used by tokenGenerate
-// const privateKey = fs.readFileSync('./.private.key'); // used by tokenGenerate
-// const { tokenGenerate } = require('@vonage/jwt');
-
 //---- AI Studio ----
 const xVgaiKey = process.env.X_VGAI_KEY;
 const agentId = process.env.AGENT_ID;
@@ -73,8 +68,6 @@ const vgAiHost = process.env.VG_AI_HOST;
 const { createClient, LiveTranscriptionEvents } = require("@deepgram/sdk");
 const fetch = require("cross-fetch");
 const dgApiKey = process.env.DEEPGRAM_API_KEY;
-
-//=================================================================================================
 
 //==================== Utilities =============================
 
@@ -106,11 +99,11 @@ async function sayText(text, language, uuid) {
 
 //-----
 
-async function sendMsgToAi(text, sessionId, sessionToken, uuid, callDirection) {
+async function sendFirstMsgToAi(text, sessionId, sessionToken, uuid, callDirection, transferUrl) {
 
     try {
 
-      console.log('\n>>> in sendMsgToAi function');
+      console.log('\n>>> in sendFirstMsgToAi function');
       console.log('>>> text:', text);
       console.log('>>> session id:', sessionId);
       console.log('>>> session token:', sessionToken);
@@ -125,10 +118,70 @@ async function sendMsgToAi(text, sessionId, sessionToken, uuid, callDirection) {
               "value": uuid
             },
             {
-              "name": "calldirection",
+              "name": "direction",
               "value": callDirection
             },
+            {
+              "name": "transferurl",
+              "value": transferUrl
+            },
           ]
+        },
+        {
+          headers: {
+            "Authorization": "Bearer " + sessionToken,
+            "Content-Type": 'application/json'
+          }
+        }
+      );
+
+      // console.log("AI agent full step response:", stepResponse.data);
+      
+      const messages = stepResponse.data.messages;
+      // console.log("AI agent message response:", messages);
+
+      let aiResponse = '';
+
+      messages.forEach((message) => {
+        // console.log('text entry:', message.text);
+        if (message.text) {
+          aiResponse += ' ' + message.text
+        }
+      });
+
+      const aiSessionStatus = stepResponse.data.session_status;
+
+      console.log('>>> aiResponse:', aiResponse);
+      console.log('>>> aiSessionStatus:', aiSessionStatus);
+
+      return({
+        "aiResponse": aiResponse,
+        "aiSessionStatus": aiSessionStatus
+      })
+
+    } catch (error) {
+
+      console.log('>>> First step to AI agent failed', error.response);
+      return(null)
+
+    }
+
+}
+
+//-----
+
+async function sendMsgToAi(text, sessionId, sessionToken) {
+
+    try {
+
+      console.log('\n>>> in sendMsgToAi function');
+      console.log('>>> text:', text);
+      console.log('>>> session id:', sessionId);
+      console.log('>>> session token:', sessionToken);
+
+      const stepResponse = await axios.post('https://' + vgAiHost + '/http/' + sessionId + '/step', 
+        { 
+          "input": text
         },
         {
           headers: {
@@ -205,14 +258,12 @@ app.get('/startcall', async(req, res) => {
 
       const initialData = await axios.post('https://' + vgAiHost + '/http/init', 
         { 
-          "agent_id": agentId,
-          "calldirection": "incoming"
+          "agent_id": agentId
         },
         {
           headers: {
             "Content-Type": "application/json",
             "X-Vgai-Key": xVgaiKey
-            // "calldirection": "incoming"
           }
         }
       );
@@ -274,7 +325,7 @@ app.get('/answer_1', async(req, res) => {
   const sessionId = req.query.session_id;
   const sessionToken = req.query.session_token;
 
-  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken  + '&caller_number=' + servicePhoneNumber  + '&call_direction=outgoing';
+  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken  + '&caller_number=' + servicePhoneNumber;
 
   const nccoResponse = [
     {
@@ -301,7 +352,7 @@ app.get('/answer_1', async(req, res) => {
 
   //-- Send dummy initial prompt to AI studio agent -- 
 
-  const aiReply = await sendMsgToAi("Hello", sessionId, sessionToken, uuid, "outgoing");
+  const aiReply = await sendFirstMsgToAi("Hello", sessionId, sessionToken, uuid, "outbound", "https://" + hostName + "/calltransfer");
 
   if (aiReply && aiReply.aiResponse != "") {
     await sayText(aiReply.aiResponse, 'en-US', uuid)
@@ -378,7 +429,7 @@ app.get('/answer', async(req, res) => {
 
   const uuid = req.query.uuid;
  
-  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken + '&call_direction=incoming';
+  const wsUri = 'wss://' + hostName + '/socket?original_uuid=' + uuid + '&session_id=' + sessionId + '&session_token=' + sessionToken;
 
   const nccoResponse = [
     {
@@ -405,7 +456,7 @@ app.get('/answer', async(req, res) => {
 
   //-- Send dummy initial prompt to AI studio agent -- 
 
-  const aiReply = await sendMsgToAi("Hello", sessionId, sessionToken, uuid, "incoming");
+  const aiReply = await sendFirstMsgToAi("Hello", sessionId, sessionToken, uuid, "inbound", "https://" + hostName + "/calltransfer");
 
   if (aiReply && aiReply.aiResponse != "") {
     await sayText(aiReply.aiResponse, 'en-US', uuid)
@@ -469,6 +520,9 @@ app.post('/calltransfer', async(req, res) => {
     .then(res => {
       if (res.status == 'answered') { // is first PSTN leg still up?
 
+        console.log('>>> Transfer NCCO:');
+        console.log(ncco);
+
         vonage.voice.transferCallWithNCCO(uuid, ncco) // transfer call to second PSTN party
           .then(res => console.log(">>> Transfer call status:", uuid, calleeNumber, res))
           .catch(err => console.error("Failed transfer call:", uuid, calleeNumber, err));
@@ -521,7 +575,6 @@ app.ws('/socket', async (ws, req) => {
   console.log('WebSocket from Vonage platform to /socket')
 
   const originalUuid = req.query.original_uuid;
-  const callDirection = req.query.call_direction;
 
   let canSendAiStep = true;
 
@@ -562,7 +615,7 @@ app.ws('/socket', async (ws, req) => {
 
         if (canSendAiStep) {
           
-          const aiReply = await sendMsgToAi(transcript, vgAiSessionId, vgAiSessionToken, originalUuid, callDirection);
+          const aiReply = await sendMsgToAi(transcript, vgAiSessionId, vgAiSessionToken);
           
           console.log('>>> Response from AI agent:', aiReply);
 
