@@ -581,7 +581,6 @@ app.ws('/socket', async (ws, req) => {
   const vgAiSessionId = req.query.session_id;
   const vgAiSessionToken = req.query.session_token;
   const webhookBaseUrl = req.query.webhook_base_url;
-  const referenceBack = req.query.reference_back;
 
   //--
 
