@@ -1,7 +1,35 @@
-
-# Connector for Vonage AI Studio to use an external ASR engine
+# ASR Connector for Vonage AI Studio to use an external ASR engine
 
 >>> TBD update below content <<< NOT RELEVANT AT THE MOMENT !!!!!!!
+
+## What this sample HTTP AI Agent and ASR Connector do
+
+It shows you can use a third-party ASR (Automatic Speech Recognition) engine with a Vonage AI Agent.</br>
+
+An HTTP type **AI agent** (created in or imported to Vonage AI Studio) uses the **ASR Connector** to handle the voice connectivity including PSTN phone calls, WebRTC calls, or SIP calls, and the ASR engine connection, for speech recognition.
+
+How the call flow happens with the sample HTTP AI Agent and the ASR Connector in this repository,
+- A phone call is established first with, let's say, a customer,
+- Customer interacts with the Voice bot (via the AI agent),
+- Call gets transferred to, let's say, a live agent, and connection with the AI agent is terminated
+
+## How this sample HTTP AI Agent and ASR Connector work
+
+See also the diagram _vonage-ai-asr-connector.png_.
+
+In this diagram, the **ASR Connector** application is shown in two parts for easier description, however both parts are in one source code file in this repository.
+
+
+
+
+
+
+## Deploy the sample HTTP AI Agent
+
+
+
+
+
 
 ## Set up
 
