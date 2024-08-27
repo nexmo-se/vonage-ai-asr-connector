@@ -1,7 +1,7 @@
 {
   "name": "vonage-ai-asr-connector",
   "version": "1.0.0",
-  "description": ">>> TBD update below content",
+  "description": "ASR Connector for Vonage AI",
   "main": "asr-connector.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
