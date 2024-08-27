@@ -6,36 +6,75 @@
 
 It shows you can use a third-party ASR (Automatic Speech Recognition) engine with a Vonage AI Agent.</br>
 
-An HTTP type **AI agent** (created in or imported to Vonage AI Studio) uses the **ASR Connector** to handle the voice connectivity including PSTN phone calls, WebRTC calls, or SIP calls, and the ASR engine connection, for speech recognition.
+An HTTP type **AI agent** (created in or imported to Vonage AI Studio) uses the **ASR Connector** to handle the voice connectivity including PSTN phone calls, WebRTC calls, or SIP calls, and the ASR engine connection, for speech recognition.</br>
 
-How the call flow happens with the sample HTTP AI Agent and the ASR Connector in this repository,
-- A phone call is established first with, let's say, a customer,
-- Customer interacts with the Voice bot (via the AI agent),
-- Call gets transferred to, let's say, a live agent, and connection with the AI agent is terminated
+How the call flow happens with the sample HTTP AI Agent and the ASR Connector in this repository,</br>
+- A phone call is established first with, let's say, a customer,</br>
+- Customer interacts with the Voice bot (via the AI agent),</br>
+- Call gets transferred to, let's say, a live agent, and connection with the AI agent is terminated. </br>
 
 ## How this sample HTTP AI Agent and ASR Connector work
 
-See also the diagram _vonage-ai-asr-connector.png_.
+See also the diagram _vonage-ai-asr-connector.png_.</br>
 
-In this diagram, the **ASR Connector** application is shown in two parts for easier description, however both parts are in one source code file in this repository.
+In this diagram, the **ASR Connector** application is shown in two parts for easier description, however both parts are in one source code file in this repository.</br>
 
+First, PSTN 1 leg is established with the customer, it can be an inbound call or an outbound call,</br>
+then a WebSocket leg is established with the ASR Connector (part 1) which sends the audio from the customer to the ASR engine.</br>
 
+With this ASR Connector, we are using Deepgram to do speech recognition.</br>
 
+Received transcriptions are sent to the ASR Connector (part 2).</br>
 
+The ASR Connector (part 2) submits each transcript as an _HTTP AI Step_ to the AI agent,</br>
+a text result is returned by the AI agent,</br>
+which the ASR Connector (part 2) plays via TTS (Text-to-Speech) to the customer.</br>
 
-
-## Deploy the sample HTTP AI Agent
-
-
-
-
-
+Then the customer speaks again, and so on, until the AI agent decides to transfer the call to a live agent,</br>
+upon transfer request by the AI agent to the ASR Connector (part 2), the call is efefctively transferred to the agent, and the interaction with the AI agent is terminated.</br>
 
 ## Set up
 
+### Deploy the sample HTTP AI Agent
+
+From AI Studio, import the attached sample AI agent _BlogAgent.zip_.</br>
+
+For this sample agent, for test and demo purpose, you need to set the live agent phone number,</br>
+to do that, edit this agent,</br>
+go to Properties, Parameters, Custom Parameters, callee,</br>
+change the value to your desired recipient number,</br>
+it must be a phone number in E.164 format without the leading '+' sign,</br>
+click on [Close].</br>
+
+Then [Publish] the AI agent.</br>
+
+Take note of the:</br>
+- Agent ID,</br>
+and
+- The Vonage AI API key, see next lines comments.
+
+Do not confuse your _Vonage **AI API key**_ with your _Vonage **account API key**_
+
+If you already have an existing Vonage AI API key, you keep that one,</br>
+if not you may create one,</br>
+within AI Studio UI, go to the top right corner,</br>
+click on the user icon,</br>
+then "Generate API key",</br>
+take note of it.</br>
+
+Both Agent ID and AI API key values are needed in a next section.
+
+### Get your credentials from Deepgram
+
+Sign up with or log in to Deepgram.</br>
+
+Create or use an API key,
+take note of it (as it will be needed in a next section).</br>
+
+
 ### Set up your Vonage Voice API application credentials and phone number
 
-[Log in to your](https://dashboard.nexmo.com/sign-in) or [sign up for a](https://dashboard.nexmo.com/sign-up) Vonage APIs account.
+[Log in to your](https://ui.idp.vonage.com/ui/auth/login) or [sign up for a](https://ui.idp.vonage.com/ui/auth/registration) Vonage APIs account.
 
 Go to [Your applications](https://dashboard.nexmo.com/applications), access an existing application or [+ Create a new application](https://dashboard.nexmo.com/applications/new).
 
@@ -72,80 +111,35 @@ npm install
 
 Launch the application:<br>
 ```bash
-node pstn-websocket-app
+node asr-connector
 ```
 
 Default local (not public!) of this application server `port` is: 8000.
 
-## How this application works
+## How to test the sample AI agent and ASR Connector
 
-### When first PSTN call is outbound
+### First PSTN call is outbound
 
-See corresponding diagram first-pstn-call-is-outbound.png
+You may trigger the outbound call by opening the following web address<br>
+https://<public_host_name>/startcall?callee=<callee_phone_number><br>
 
-For testing purposes, you may trigger the corresponding call flow with the web address where this application is running
-https://<public_host_name>/startcall?callee=<callee_phone_number>
-
-for example:
-https://myserver.mycompany.com:32000/startcall?callee=12995551212
-or
-https://xxxx.ngrok.io/startcall?callee=12995551212
-
-To make sure the WebSocket hears the inbound audio on the outbound PSTN call from the very beginning, in the call flow, the WebSocket is established first, then the outbound PSTN call.
+for example:<br>
+https://myserver.mycompany.com:32000/startcall?callee=12995551515<br>
+or<br>
+https://xxxx.ngrok.io/startcall?callee=12995551515<br>
 
 
-Step 1a - Establish WebSocket 1, once answered by the middleware, drop that leg into a unique named conference (NCCO with action conversation),
+### First PSTN call is inbound
 
-Step 1b - Place outbound PSTN 1 call, once answered by remote party, drop that leg into same named conference (NCCO with action conversation),
-
-
-If the voice API application decides to transfer PSTN 1 party with another party, identified as PSTN 2 party, then execute following steps.
+Call the phone number linked to your Vonage API account.
 
 
-Step 2a - Place outbound PSTN 2 call, once answered by remote party, drop that leg into same named conference (NCCO with action conversation),
+### In both cases
 
-Step 1c - Terminate WebSocket 1 leg.
-
-
-Additional info:
-For testing purposes, step 2a and step 1c are trigerred in the application some time after step 1b has completed. In real deployment, your application decides when to transfer call to PSTN 2 party, if needed at all.
-
-In step 1a, the NCCO with action conversation does not include endOnExit true flag because it may automatically terminate both PSTN calls which is an undesired behavior. Instead the application decides what to do in that case, e.g. terminate PSTN 1 leg or let proceed.
-
-In step 1b and in step 2a, both NCCOs with action conversation include endOnExit true flag because if either PSTN 1 or PSTN 2 remote party ends the call, then all legs attached to the same conference should be terminated.
-
-Application automatically terminates PSTN 1 leg if WebSocket 1 has been terminated from the middleware side and if PSTN 2 leg call has not yet been initiated.
-
-Application automatically terminates PSTN 2 leg call setup in progress (e.g. in ringing state, ...) if PSTN 1 leg remote party hung up.
-
-
-### When first PSTN call is inbound
-
-See corresponding diagram first-pstn-call-is-inbound.png
-
-Step a1 - Answer incoming PSTN A call, drop that leg into a unique named conference (NCCO with action conversation),
-
-Step a2 - Establish WebSocket A leg, once answered drop that leg into same named conference (NCCO with action conversation).
-
-
-If the voice API application decides to transfer PSTN A party with another party, identified as PSTN B party, then execute following steps.
-
-Step b1 - Place outbound PSTN B call, once answered by remote party, drop that leg into same named conference (NCCO with action conversation),
-
-Step a3 - Terminate WebSocket A leg.
-
-
-Additional info:
-For testing purposes, step b1 and step a3 are trigerred in the application some time after step a2 has completed. In real deployment, your application decides when to transfer call to PSTN B party, if needed at all.
-
-In step a2, the NCCO with action conversation does not include endOnExit true flag because it may automatically terminate both PSTN calls which is an undesired behavior. Instead the application decides what to do in that case, e.g. terminate PSTN A leg or let proceed.
-
-In step a1 and in step b1, both NCCOs with action conversation include endOnExit true flag because if either PSTN A or PSTN B remote party ends the call, then all legs attached to the same conference should be terminated.
-
-Application automatically terminates PSTN A leg if WebSocket A has been terminated from the middleware side and if PSTN B leg call has not yet been initiated.
-
-Application automatically terminates PSTN B leg call setup in progress (e.g. in ringing state, ...) if PSTN A leg remote party hung up.
-
+Whether the first call is outbound or inbound, the user (e.g. customer) will be asked for a name,<br>
+then some jokes will be played instead of music-on-hold,<br>
+until the user says "no" for no more jokes,<br>
+after which the call is transferred to the other user (e.g. live agent) which phone number is the one that has been set when deploying the AI agent.
 
 
 
