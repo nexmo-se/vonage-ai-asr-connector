@@ -1,17 +1,15 @@
-# ASR Connector for Vonage AI Studio to use an external ASR engine
-
->>> TBD update below content <<< NOT RELEVANT AT THE MOMENT !!!!!!!
+# ASR Connector for Vonage AI Studio
 
 ## What this sample HTTP AI Agent and ASR Connector do
 
-It shows you can use a third-party ASR (Automatic Speech Recognition) engine with a Vonage AI Agent.</br>
+It shows how you can use a third-party ASR (Automatic Speech Recognition) engine with a Vonage AI Agent.</br>
 
-An HTTP type **AI agent** (created in or imported to Vonage AI Studio) uses the **ASR Connector** to handle the voice connectivity including PSTN phone calls, WebRTC calls, or SIP calls, and the ASR engine connection, for speech recognition.</br>
+An HTTP type **AI agent** (created in or imported to Vonage AI Studio) uses the **ASR Connector** which handles the voice connectivity including PSTN phone calls, WebRTC calls, or SIP calls, as well as the ASR engine connection, for speech recognition.</br>
 
-How the call flow happens with the sample HTTP AI Agent and the ASR Connector in this repository,</br>
+How the call flow happens with the sample HTTP AI Agent and the ASR Connector in this repository:</br>
 - A phone call is established first with, let's say, a customer,</br>
 - Customer interacts with the Voice bot (via the AI agent),</br>
-- Call gets transferred to, let's say, a live agent, and connection with the AI agent is terminated. </br>
+- Call gets transferred to, let's say, a live agent, and the connection with the AI agent is terminated. </br>
 
 ## How this sample HTTP AI Agent and ASR Connector work
 
@@ -26,38 +24,38 @@ With this ASR Connector, we are using Deepgram to do speech recognition.</br>
 
 Received transcriptions are sent to the ASR Connector (part 2).</br>
 
-The ASR Connector (part 2) submits each transcript as an _HTTP AI Step_ to the AI agent,</br>
+The ASR Connector (part 2) submits each transcript via HTTP as an _AI Step_ to the AI agent,</br>
 a text result is returned by the AI agent,</br>
 which the ASR Connector (part 2) plays via TTS (Text-to-Speech) to the customer.</br>
 
 Then the customer speaks again, and so on, until the AI agent decides to transfer the call to a live agent,</br>
-upon transfer request by the AI agent to the ASR Connector (part 2), the call is efefctively transferred to the agent, and the interaction with the AI agent is terminated.</br>
+upon transfer request by the AI Agent to the ASR Connector (part 2), the call is effectively transferred to the agent, as PSTN call 2, and the interaction with the AI Agent is terminated.</br>
 
 ## Set up
 
 ### Deploy the sample HTTP AI Agent
 
-From AI Studio, import the attached sample AI agent _BlogAgent.zip_.</br>
+From AI Studio, import the attached sample AI Agent _BlogAgent.zip_.</br>
 
-For this sample agent, for test and demo purpose, you need to set the live agent phone number,</br>
+For this sample AI Agent, for test and demo purpose, you need to set the live agent phone number,</br>
 to do that, edit this agent,</br>
 go to Properties, Parameters, Custom Parameters, callee,</br>
 change the value to your desired recipient number,</br>
 it must be a phone number in E.164 format without the leading '+' sign,</br>
 click on [Close].</br>
 
-Then [Publish] the AI agent.</br>
+Then [Publish] the AI Agent.</br>
 
 Take note of the:</br>
-- Agent ID,</br>
+- **Agent ID**,</br>
 and
-- The Vonage AI API key, see next lines comments.
+- The Vonage **AI API key**, see next lines comments.
 
 Do not confuse your _Vonage **AI API key**_ with your _Vonage **account API key**_
 
 If you already have an existing Vonage AI API key, you keep that one,</br>
 if not you may create one,</br>
-within AI Studio UI, go to the top right corner,</br>
+to do so, within AI Studio UI, go to the top right corner,</br>
 click on the user icon,</br>
 then "Generate API key",</br>
 take note of it.</br>
@@ -68,7 +66,7 @@ Both Agent ID and AI API key values are needed in a next section.
 
 Sign up with or log in to Deepgram.</br>
 
-Create or use an API key,
+Create or use an existing Deepgram API key,
 take note of it (as it will be needed in a next section).</br>
 
 
@@ -116,7 +114,7 @@ node asr-connector
 
 Default local (not public!) of this application server `port` is: 8000.
 
-## How to test the sample AI agent and ASR Connector
+## How to test the sample AI Agent and ASR Connector
 
 ### First PSTN call is outbound
 
@@ -139,7 +137,7 @@ Call the phone number linked to your Vonage API account.
 Whether the first call is outbound or inbound, the user (e.g. customer) will be asked for a name,<br>
 then some jokes will be played instead of music-on-hold,<br>
 until the user says "no" for no more jokes,<br>
-after which the call is transferred to the other user (e.g. live agent) which phone number is the one that has been set when deploying the AI agent.
+after which the call is transferred to the other user (e.g. live agent) which phone number is the one that has been set when deploying the AI Agent.
 
 
 
