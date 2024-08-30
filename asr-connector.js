@@ -252,7 +252,7 @@ app.get('/startcall', async(req, res) => {
       hostName = req.hostname;
     }
 
-    //-- Establish a new session to AI studio agent --
+    //-- Open a new session to AI studio agent --
 
     try {
 
@@ -385,7 +385,7 @@ app.get('/answer', async(req, res) => {
   let sessionId;
   let sessionToken;
 
-  //-- Establish a new session to AI studio agent --
+  //-- Open a new session to AI studio agent --
 
   try {
 
