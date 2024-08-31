@@ -20,8 +20,6 @@ app.use(bodyParser.json());
 
 const axios = require('axios');
 
-// const { v4: uuidv4 } = require('uuid');
-
 //---- CORS policy - Update this section as needed ----
 
 app.use(function (req, res, next) {
@@ -499,8 +497,8 @@ app.post('/calltransfer', async(req, res) => {
     {
       "action": "talk",
       "text": req.body.announcement,
-      "language": "en-US",  // update to your local preference
-      "style": 11           // update to your preference
+      "language": "en-US",  // update to your language locale preference
+      "style": 11           // update to your voice sounding preference
     },
     {
       "action": "connect",
