@@ -4,7 +4,7 @@
 
 It shows how:
 - You may extend Vonage AI Studio to use a third-party ASR (Automatic Speech Recognition) engine,</br>
-- Or you may augment a Vonage Voice API application to use a Vonage AI Studio Agent for advanced AI capabilities.
+- Or you may augment a Vonage Voice API application with ASR capability to use a Vonage AI Studio Agent for advanced AI capabilities.
 
 An HTTP type **AI Agent** (created in or imported to Vonage AI Studio) uses the **ASR Connector** which handles the voice connectivity including PSTN phone calls, WebRTC calls, or SIP calls, as well as the ASR Engine connection, for speech recognition.</br>
 
