@@ -111,7 +111,7 @@ click on \[Import Agent\].
 
 
 Click on the just imported Agent to open it,</br>
-for this sample AI Agent, for test and demo purposes, you need to set the live agent phone number,</br>
+for this sample AI Agent, for test and demo purposes, you need to set the Live Agent phone number,</br>
 to do that,</br>
 go to Properties (left column icons), Parameters, Custom Parameters, callee,</br>
 change the value to your desired recipient number,</br>
@@ -184,7 +184,7 @@ Call the phone number linked to your Vonage API account.
 Whether the first call is outbound or inbound, the user (e.g. customer) will be asked for a name,<br>
 then some jokes will be played instead of music-on-hold,<br>
 until the user says "no" for no more jokes,<br>
-after which the call is transferred to the other user (e.g. live agent) which phone number is the one that has been set when deploying the AI Agent.
+after which the call is transferred to the other user (e.g. Live Agent) which phone number is the one that has been set when deploying the AI Agent.
 
 
 
