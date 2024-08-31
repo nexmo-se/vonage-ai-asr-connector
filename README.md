@@ -73,11 +73,11 @@ Under Capabilities section (click on [Edit] if you do not see this section):
 Enable Voice</br>
 
 - Under Answer URL, leave HTTP GET, and enter</br>
-`https://\<host\>:\<port\>/answer`</br>
+`https://<host>:<port>/answer`</br>
 (replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
 
 - Under Event URL, **select** HTTP POST, and enter</br>
-`https://\<host\>:\<port\>/event`</br>
+`https://<host>:<port>/event`</br>
 (replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
 
 Note: If you are using ngrok for this sample application, the answer URL and event URL look like:</br>
@@ -125,7 +125,7 @@ Take note of:</br>
 and
 - The Vonage **AI API key**, see next lines comments.
 
-Do not confuse your _Vonage **AI API key**_ with your _Vonage **account API key**_
+**Do not confuse** your _Vonage **AI API key**_ with your _Vonage **account API key**_
 
 If you already have an existing Vonage AI API key, you keep that one,</br>
 if not you may create one,</br>
