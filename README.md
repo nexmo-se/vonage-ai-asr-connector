@@ -33,44 +33,34 @@ upon transfer request by the AI Agent to the ASR Connector (part 2), the call is
 
 ## Set up
 
-### Deploy the sample HTTP AI Agent
+### Node.js
 
-From AI Studio, import the attached sample AI Agent _BlogAgent.zip_.</br>
+[Download and install Node.js](https://nodejs.org/en/download/package-manager) version 18.
 
-For this sample AI Agent, for test and demo purpose, you need to set the live agent phone number,</br>
-to do that, edit this agent,</br>
-go to Properties, Parameters, Custom Parameters, callee,</br>
-change the value to your desired recipient number,</br>
-it must be a phone number in E.164 format without the leading '+' sign,</br>
-click on [Close].</br>
+This Node.js ASR Connector application has been tested with Node.js version 18.
 
-Then [Publish] the AI Agent.</br>
+### Ngrok
 
-Take note of the:</br>
-- **Agent ID**,</br>
-and
-- The Vonage **AI API key**, see next lines comments.
+[Download and install ngrok](https://ngrok.com/download), an Internet tunelling service.
+Sign in or sign up with [ngrok](https://ngrok.com/), from the menu, follow the **Setup and Installation** guide.
 
-Do not confuse your _Vonage **AI API key**_ with your _Vonage **account API key**_
+Set up a domain to forward to the local port 8000 (as the ASR Connector application will be listening on port 8000).
 
-If you already have an existing Vonage AI API key, you keep that one,</br>
-if not you may create one,</br>
-to do so, within AI Studio UI, go to the top right corner,</br>
-click on the user icon,</br>
-then "Generate API key",</br>
-take note of it.</br>
+Start ngrok to listen on port 8000,</br>
+please take note of the ngrok **Enpoint URL** as it will be need in the next sections,
+that URL looks like:</br>
+https://yyyyyyyy.ngrok.io 
 
-Both Agent ID and AI API key values are needed in a next section.
+### Deepgram
 
-### Get your credentials from Deepgram
+Sign in or sign up with [Deepgram](https://deepgram.com/).
 
-Sign up with or log in to Deepgram.</br>
+Create or use an existing project, then create or retrieve an API key.
 
-Create or use an existing Deepgram API key,
-take note of it (as it will be needed in a next section).</br>
+For the next steps, you will need:</br>
+- The Deegpram **API key** (as environment variable **`DEEPGRAM_API_KEY`**)</br>
 
-
-### Set up your Vonage Voice API application credentials and phone number
+### Vonage API Account - Voice API Application
 
 [Log in to your](https://ui.idp.vonage.com/ui/auth/login) or [sign up for a](https://ui.idp.vonage.com/ui/auth/registration) Vonage APIs account.
 
@@ -83,24 +73,67 @@ Enable Voice
 - Under Event URL, **select** HTTP POST, and enter https://\<host\>:\<port\>/event (replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
 Note: If you are using ngrok for this sample application, the answer URL and event URL look like:</br>
 https://yyyyyyyy.ngrok.io/answer</br>
-https://yyyyyyyy.ngrok.io/event</br> 	
+https://yyyyyyyy.ngrok.io/event</br> 
+- Under Region, select a region, please take note of your selection,	
 - Click on [Generate public and private key] if you did not yet create or want new ones, save the private key file in this application folder as .private.key (leading dot in the file name).</br>
 **IMPORTANT**: Do not forget to click on [Save changes] at the bottom of the screen if you have created a new key set.</br>
 - Link a phone number to this application if none has been linked to the application.
 
-Please take note of your **application ID** and the **linked phone number** (as they are needed in the very next section).
+Please take note of your _application ID_ and the _linked phone number_ (as they are needed in the very next section).
 
 For the next steps, you will need:</br>
-- Your [Vonage API key](https://dashboard.nexmo.com/settings) (as **`API_KEY`**)</br>
-- Your [Vonage API secret](https://dashboard.nexmo.com/settings), not signature secret, (as **`API_SECRET`**)</br>
-- Your `application ID` (as **`APP_ID`**),</br>
-- The **`phone number linked`** to your application (as **`SERVICE_PHONE_NUMBER`**), your phone will **call that number**,</br>
+- The [Vonage API key](https://dashboard.nexmo.com/settings) (as environment variable **`API_KEY`**)</br>
+- The [Vonage API secret](https://dashboard.nexmo.com/settings), not signature secret, (as environment variable **`API_SECRET`**)</br>
+- The **`application ID`** (as environment variable **`APP_ID`**),</br>
+- The selected **`Region`** (as environment variable **`API_REGION`**),</br>
+- The **`phone number linked`** to your application (as environment variable **`SERVICE_PHONE_NUMBER`**), your phone will **call that number**,</br>
 
-### Local setup
+
+### Deploy the sample HTTP AI Agent 
+
+Login to your [Vonage API account](https://ui.idp.vonage.com/ui/auth/login),
+
+Go to [AI Studio](https://studio.ai.vonage.com/),</br>
+import the attached sample AI Agent _**BlogAgent.zip**_,</br>
+you may change the _Agent Name_,</br>
+click on \[Import Agent\].
+
+
+Click on the just imported Agent to open it,</br>
+for this sample AI Agent, for test and demo purposes, you need to set the live agent phone number,</br>
+to do that,</br>
+go to Properties (left column icons), Parameters, Custom Parameters, callee,</br>
+change the value to your desired recipient number,</br>
+it must be a phone number in E.164 format without the leading '+' sign,</br>
+click on [Close].</br>
+
+Then [Publish] the AI Agent.</br>
+
+Take note of:</br>
+- The **Agent ID**,</br>
+and
+- The Vonage **AI API key**, see next lines comments.
+
+Do not confuse your _Vonage **AI API key**_ with your _Vonage **account API key**_
+
+If you already have an existing Vonage AI API key, you keep that one,</br>
+if not you may create one,</br>
+to do so, within AI Studio UI, go to the top right corner,</br>
+click on the user icon,</br>
+then "Generate API key",</br>
+take note of it.</br>
+
+For the next steps, you will need:</br>
+- The **AI API key** (as environment variable **`X_VGAI_KEY`**)</br>
+- The **Agent ID** (as environment variable **`AGENT_ID`**)</br>
+
+
+### Setup to run locally the ASR Connector application on your computer
 
 Copy or rename .env-example to .env<br>
-Update parameters in .env file<br>
-Have Node.js installed on your system, this application has been tested with Node.js version 18.19.1<br>
+Update all the parameters in .env file<br>
+
+This application has been tested with Node.js version 18.19.1<br>
 
 Install node modules with the command:<br>
  ```bash
@@ -112,7 +145,7 @@ Launch the application:<br>
 node asr-connector
 ```
 
-Default local (not public!) of this application server `port` is: 8000.
+Default local (not public!) of this application listening `port` is: 8000.
 
 ## How to test the sample AI Agent and ASR Connector
 
@@ -124,7 +157,7 @@ https://<public_host_name>/startcall?callee=<callee_phone_number><br>
 for example:<br>
 https://myserver.mycompany.com:32000/startcall?callee=12995551515<br>
 or<br>
-https://xxxx.ngrok.io/startcall?callee=12995551515<br>
+https://yyyyyyyy.ngrok.io/startcall?callee=12995551515<br>
 
 
 ### First PSTN call is inbound
