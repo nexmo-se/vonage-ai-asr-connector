@@ -80,7 +80,7 @@ Enable Voice</br>
 `https://<host>:<port>/event`</br>
 (replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
 
-Note: If you are using ngrok for this sample application, the answer URL and event URL look like:</br>
+Note: If you are using ngrok for this sample application, the Answer URL and Event URL look like:</br>
 `https://yyyyyyyy.ngrok.io/answer`</br>
 `https://yyyyyyyy.ngrok.io/event`</br> 
 
