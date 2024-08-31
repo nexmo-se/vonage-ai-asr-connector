@@ -4,7 +4,7 @@
 
 It shows how:
 - You may extend Vonage AI Studio to use a third-party ASR (Automatic Speech Recognition) engine,</br>
-- Or augment a Vonage Voice API application to use a Vonage AI Studio Agent for advanced AI capabilities.
+- Or you may augment a Vonage Voice API application to use a Vonage AI Studio Agent for advanced AI capabilities.
 
 An HTTP type **AI Agent** (created in or imported to Vonage AI Studio) uses the **ASR Connector** which handles the voice connectivity including PSTN phone calls, WebRTC calls, or SIP calls, as well as the ASR Engine connection, for speech recognition.</br>
 
@@ -43,7 +43,7 @@ This Node.js ASR Connector application has been tested with Node.js version 18.
 
 ### Ngrok
 
-[Download and install ngrok](https://ngrok.com/download), an Internet tunelling service.
+[Download and install ngrok](https://ngrok.com/download), an Internet tunelling service.</br>
 Sign in or sign up with [ngrok](https://ngrok.com/), from the menu, follow the **Setup and Installation** guide.
 
 Set up a domain to forward to the local port 8000 (as the ASR Connector application will be listening on port 8000).
@@ -70,20 +70,31 @@ Go to [Your applications](https://dashboard.nexmo.com/applications), access an e
 
 Under Capabilities section (click on [Edit] if you do not see this section):
 
-Enable Voice
-- Under Answer URL, leave HTTP GET, and enter https://\<host\>:\<port\>/answer (replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
-- Under Event URL, **select** HTTP POST, and enter https://\<host\>:\<port\>/event (replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
+Enable Voice</br>
+
+- Under Answer URL, leave HTTP GET, and enter</br>
+`https://\<host\>:\<port\>/answer`</br>
+(replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
+
+- Under Event URL, **select** HTTP POST, and enter</br>
+`https://\<host\>:\<port\>/event`</br>
+(replace \<host\> and \<port\> with the public host name and if necessary public port of the server where this sample application is running)</br>
+
 Note: If you are using ngrok for this sample application, the answer URL and event URL look like:</br>
 `https://yyyyyyyy.ngrok.io/answer`</br>
 `https://yyyyyyyy.ngrok.io/event`</br> 
+
 - Under Region, select a region, please take note of your selection,	
+
 - Click on [Generate public and private key] if you did not yet create or want new ones, save the private key file in this application folder as .private.key (leading dot in the file name).</br>
+
 **IMPORTANT**: Do not forget to click on [Save changes] at the bottom of the screen if you have created a new key set.</br>
+
 - Link a phone number to this application if none has been linked to the application.
 
 For the next steps, you will need:</br>
-- The [Vonage API key](https://dashboard.nexmo.com/settings) (as environment variable **`API_KEY`**)</br>
-- The [Vonage API secret](https://dashboard.nexmo.com/settings), not signature secret, (as environment variable **`API_SECRET`**)</br>
+- The [Account API key](https://dashboard.nexmo.com/settings) (as environment variable **`API_KEY`**)</br>
+- The [Account API secret](https://dashboard.nexmo.com/settings), not signature secret, (as environment variable **`API_SECRET`**)</br>
 - The **`application ID`** (as environment variable **`APP_ID`**),</br>
 - The selected **`Region`** (as environment variable **`API_REGION`**),</br>
 - The **`phone number linked`** to your application (as environment variable **`SERVICE_PHONE_NUMBER`**).</br>
