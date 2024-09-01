@@ -100,7 +100,7 @@ For the next steps, you will need:</br>
 - The **`phone number linked`** to your application (as environment variable **`SERVICE_PHONE_NUMBER`**).</br>
 
 
-### Deploy the sample HTTP AI Agent 
+### HTTP AI Agent 
 
 Login to your [Vonage API account](https://ui.idp.vonage.com/ui/auth/login),
 
