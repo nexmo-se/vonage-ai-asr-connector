@@ -93,8 +93,8 @@ Note: If you are using ngrok for this sample application, the Answer URL and Eve
 - Link a phone number to this application if none has been linked to the application.
 
 For the next steps, you will need:</br>
-- The [Account API key](https://dashboard.nexmo.com/settings) (as environment variable **`API_KEY`**)</br>
-- The [Account API secret](https://dashboard.nexmo.com/settings), not signature secret, (as environment variable **`API_SECRET`**)</br>
+- The [account API key](https://dashboard.nexmo.com/settings) (as environment variable **`API_KEY`**)</br>
+- The [account API secret](https://dashboard.nexmo.com/settings), not signature secret, (as environment variable **`API_SECRET`**)</br>
 - The **`application ID`** (as environment variable **`APP_ID`**),</br>
 - The selected **`Region`** (as environment variable **`API_REGION`**),</br>
 - The **`phone number linked`** to your application (as environment variable **`SERVICE_PHONE_NUMBER`**).</br>
