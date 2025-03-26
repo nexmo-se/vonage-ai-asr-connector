@@ -4,10 +4,6 @@
 
 require('dotenv').config();
 
-//--- for Neru installation ----
-const neruHost = process.env.NERU_HOST;
-console.log('neruHost:', neruHost);
-
 //--
 const express = require('express');
 const bodyParser = require('body-parser')
@@ -242,13 +238,7 @@ app.get('/startcall', async(req, res) => {
   
     res.status(200).send('Ok');  
 
-    let hostName;
-
-    if (neruHost) {
-      hostName = neruHost;
-    } else {
-      hostName = req.hostname;
-    }
+    const hostName = req.hostname;
 
     //-- Open a new session to AI studio agent --
 
@@ -309,13 +299,7 @@ app.get('/startcall', async(req, res) => {
 
 app.get('/answer_1', async(req, res) => {
 
-  let hostName;
-
-  if (neruHost) {
-    hostName = neruHost;
-  } else {
-    hostName = req.hostname;
-  }
+  const hostName = req.hostname;
 
   //--
 
@@ -415,13 +399,7 @@ app.get('/answer', async(req, res) => {
 
   //--
 
-  let hostName;
-
-  if (neruHost) {
-    hostName = neruHost;
-  } else {
-    hostName = req.hostname;
-  }
+  const hostName = req.hostname;
 
   //--
 
@@ -478,13 +456,7 @@ app.post('/calltransfer', async(req, res) => {
 
   //--
 
-  let hostName;
-
-  if (neruHost) {
-    hostName = neruHost;
-  } else {
-    hostName = req.hostname;
-  }
+  const hostName = req.hostname;
 
   //--
 
@@ -593,8 +565,8 @@ app.ws('/socket', async (ws, req) => {
 
   let deepgram = deepgramClient.listen.live({       
     model: "nova-2",
-    smart_format: true,      
-    language: "en-US",        
+    smart_format: false,      
+    language: "en-US",
     encoding: "linear16",
     sample_rate: 16000
   });
@@ -697,7 +669,7 @@ app.ws('/socket', async (ws, req) => {
 
 });
 
-//--- If this application is hosted on VCR (Vonage Code Runtime) serverless infrastructure (aka Neru) --------
+//--- If this application is hosted on VCR (Vonage Cloud Runtime) serverless infrastructure --------
 
 app.get('/_/health', async(req, res) => {
 
@@ -707,7 +679,7 @@ app.get('/_/health', async(req, res) => {
 
 //=========================================
 
-const port = process.env.NERU_APP_PORT || process.env.PORT || 8000;
+const port = process.env.VCR_PORT || process.env.PORT || 8000;
 
 app.listen(port, () => console.log(`Voice API application listening on port ${port}!`));
 
